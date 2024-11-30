@@ -1,0 +1,20 @@
+{
+  "version": 3,
+  "artifactType": {
+    "type": "APK",
+    "kind": "Directory"
+  },
+  "applicationId": "org.odk.collect.android",
+  "variantName": "release",
+  "elements": [
+    {
+      "type": "SINGLE",
+      "filters": [],
+      "attributes": [],
+      "versionCode": 5019,
+      "versionName": "b226e11cb7",
+      "outputFile": "ODK-Collect-release.apk"
+    }
+  ],
+  "elementType": "File"
+}
