@@ -20,11 +20,11 @@ import org.odk.collect.geo.R;
 public class GeoPolySettingsDialogFragment extends DialogFragment {
 
     private static final int[] INTERVAL_OPTIONS = {
-            1, 5, 10, 20, 30, 60, 300, 600, 1200, 1800
+            3, 5, 10, 15, 20
     };
 
     private static final int[] ACCURACY_THRESHOLD_OPTIONS = {
-            0, 3, 5, 10, 15, 20
+            25, 20, 10, 5, 3, 0
     };
 
     private View autoOptions;

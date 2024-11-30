@@ -74,6 +74,14 @@ public class GeoPolyActivity extends LocalizedActivity implements GeoPolySetting
     public static final String ACCURACY_THRESHOLD_INDEX_KEY = "accuracy_threshold_index";
     protected Bundle previousState;
 
+
+
+    private int intervalIndex = Global.pastInterval;
+
+    private int accuracyThresholdIndex = Global.pastAccuracy;
+
+
+
     public enum OutputMode { GEOTRACE, GEOSHAPE }
 
     private final ScheduledExecutorService executorServiceScheduler = Executors.newSingleThreadScheduledExecutor();
@@ -117,24 +125,21 @@ public class GeoPolyActivity extends LocalizedActivity implements GeoPolySetting
     private View settingsView;
 
     private static final int[] INTERVAL_OPTIONS = {
-        1, 5, 10, 20, 30, 60, 300, 600, 1200, 1800
+          3, 5, 10, 15, 20
     };
     private static final int DEFAULT_INTERVAL_INDEX = 3; // default is 20 seconds
 
     private static final int[] ACCURACY_THRESHOLD_OPTIONS = {
-        0, 3, 5, 10, 15, 20
+         25, 20, 10, 5, 3, 0
     };
-    private static final int DEFAULT_ACCURACY_THRESHOLD_INDEX = 3; // default is 10 meters
+    private static final int DEFAULT_ACCURACY_THRESHOLD_INDEX = 2; // default is 10 meters
 
     private boolean inputActive; // whether we are ready for the user to add points
     private boolean recordingEnabled; // whether points are taken from GPS readings (if not, placed by tapping)
     private boolean recordingAutomatic; // whether GPS readings are taken at regular intervals (if not, only when user-directed)
     private boolean intentReadOnly; // whether the intent requested for the path to be read-only.
 
-    private int intervalIndex = DEFAULT_INTERVAL_INDEX;
-
-    private int accuracyThresholdIndex = DEFAULT_ACCURACY_THRESHOLD_INDEX;
-
+  
     // restored from savedInstanceState
     private List<MapPoint> restoredPoints;
 
@@ -169,10 +174,14 @@ public class GeoPolyActivity extends LocalizedActivity implements GeoPolySetting
             inputActive = savedInstanceState.getBoolean(INPUT_ACTIVE_KEY, false);
             recordingEnabled = savedInstanceState.getBoolean(RECORDING_ENABLED_KEY, false);
             recordingAutomatic = savedInstanceState.getBoolean(RECORDING_AUTOMATIC_KEY, false);
-            intervalIndex = savedInstanceState.getInt(INTERVAL_INDEX_KEY, DEFAULT_INTERVAL_INDEX);
-            accuracyThresholdIndex = savedInstanceState.getInt(
-                ACCURACY_THRESHOLD_INDEX_KEY, DEFAULT_ACCURACY_THRESHOLD_INDEX);
+            //intervalIndex = savedInstanceState.getInt(INTERVAL_INDEX_KEY, DEFAULT_INTERVAL_INDEX);
+            intervalIndex = Global.pastInterval;
+            
+            //accuracyThresholdIndex = savedInstanceState.getInt( ACCURACY_THRESHOLD_INDEX_KEY, DEFAULT_ACCURACY_THRESHOLD_INDEX);
+            accuracyThresholdIndex = Global.pastAccuracy;
         }
+ 
+
 
         intentReadOnly = getIntent().getBooleanExtra(EXTRA_READ_ONLY, false);
         outputMode = (OutputMode) getIntent().getSerializableExtra(OUTPUT_MODE_KEY);
@@ -370,8 +379,13 @@ public class GeoPolyActivity extends LocalizedActivity implements GeoPolySetting
 
     @Override
     public void updateRecordingMode(int id) {
+     //   recordingEnabled = id != R.id.placement_mode;
+     //   recordingAutomatic = id == R.id.automatic_mode;
+
         recordingEnabled = id != R.id.placement_mode;
         recordingAutomatic = id == R.id.automatic_mode;
+
+
     }
 
     @Override
@@ -379,7 +393,8 @@ public class GeoPolyActivity extends LocalizedActivity implements GeoPolySetting
         if (recordingEnabled) {
             return recordingAutomatic ? R.id.automatic_mode : R.id.manual_mode;
         } else {
-            return R.id.placement_mode;
+            //return R.id.placement_mode;
+            return R.id.automatic_mode;
         }
     }
 
@@ -396,11 +411,21 @@ public class GeoPolyActivity extends LocalizedActivity implements GeoPolySetting
     @Override
     public void setIntervalIndex(int intervalIndex) {
         this.intervalIndex = intervalIndex;
+         Global.pastInterval = intervalIndex;
     }
+
+
+  // sets the accuracy and thresholds parameters as global unit changed...
+    public static class Global {
+        public static int pastInterval, pastAccuracy;
+
+    }
+
 
     @Override
     public void setAccuracyThresholdIndex(int accuracyThresholdIndex) {
         this.accuracyThresholdIndex = accuracyThresholdIndex;
+        Global.pastAccuracy = accuracyThresholdIndex;
     }
 
     private void onClick(MapPoint point) {
